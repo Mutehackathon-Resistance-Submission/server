@@ -23,11 +23,10 @@ app.post('/sightings', function(req, res) {
     db.serialize(function() {
         db.run('CREATE TABLE IF NOT EXISTS persons (latitude REAL, longitude REAL, timestamp REAL, picture BLOB, extrainfo TEXT)');
         var stmt = db.prepare("INSERT INTO persons VALUES (?, ?, ?, ?, ?)");
-        stmt.run(data.lat, data.lon, data.timestamp, data.picture, data.extrainfo);
+        stmt.run(data.lat, data.lon, data.timestamp, data.picture, data.extrainfo, function() {
+            res.send({ status: "success" });
+        });
         stmt.finalize();
-    });
-    db.close(function() {
-        res.send({ status: "success" });
     });
 });
 
@@ -72,12 +71,10 @@ app.get('/sightings', function(req, res) {
         values = []
         db.each('SELECT * FROM persons', function(err, row) {
             values.push(row);
+        }, function() {
+            res.send(values);
         });
 
-        db.close(function() {
-            res.send(values);
-            console.log(values);
-        });
     }
 });
 
