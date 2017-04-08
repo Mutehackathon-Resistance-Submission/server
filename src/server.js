@@ -11,7 +11,6 @@ app.use(bodyParser.json());
 app.post('/sightings', function(req, res) {
 	console.log("POST /");
 	var data = req.body;
-	//res.send(jsonObject); // Prints on the clients side
 
 	db.serialize(function () {
 	  db.run('CREATE TABLE IF NOT EXISTS persons (latitude REAL, longitude REAL, timestamp REAL, picture BLOB, extrainfo TEXT)');
@@ -19,22 +18,60 @@ app.post('/sightings', function(req, res) {
 		stmt.run(data.lat, data.lon, data.timestamp, data.picture, data.extrainfo);
 	  stmt.finalize();
 	});
-	//db.close()
+	db.close()
 });
 
-app.get('/sightings?', function(req, res) {
+app.get('/sightings', function(req, res) {
 	console.log("GET /");
 	var query = req._parsedUrl.query;
-	console.log(query);
+	if (query != null) {
+		var db = new sqlite3.Database('database.db');
+		console.log("Send specific query.");
+		var queryString = query.split('&');
+		var databaseQuery = "";
 
-	var arr = query.split('&');
-	console.log(arr);
+		for (var i = 0; i < queryString.length; i++) {
+			var query = queryString[i].split('=');
+			if (databaseQuery.length != 0) {
+				databaseQuery += " AND ";
+			}
 
-	//console.log(req.params);
-	/*db.each('SELECT * FROM persons', function (err, row) {
-		console.log(row);
-	});
-	*/
+			if (query[0] == 'lat') {
+				databaseQuery += 'latitude=' + query[1].toString();
+			}
+			else if (query[0] == 'lon') {
+				databaseQuery += 'longitude=' + query[1].toString();
+			}
+			else if (query[0] == 'radius') {
+				databaseQuery += 'radius=' + query[1].toString();
+			}
+		}
+
+		databaseQuery = "SELECT * FROM persons WHERE " + databaseQuery + ";";
+		console.log(databaseQuery);
+		values = [];
+		db.each(databaseQuery, function (err, row) {
+				values.push(row);
+		});
+
+		db.close(function () {
+			res.send(values);
+			console.log(values);
+		});
+	}
+	else {
+		console.log("Send everything.");
+		var db = new sqlite3.Database('database.db');
+		values = []
+		db.each('SELECT * FROM persons', function (err, row) {
+				values.push(row);
+		});
+
+		db.close(function () {
+			res.send(values);
+			console.log(values);
+		});
+	}
 });
 
 app.listen(3000, function() {

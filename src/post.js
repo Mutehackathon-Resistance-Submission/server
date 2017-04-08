@@ -6,7 +6,7 @@ request.post({
      },
      body: {
        'lat': '50',
-       'lon': '-90.1848',
+       'lon': '30',
        'timestamp': '1491625719505',
        'picture': 'picture',
        'extrainfo': {}

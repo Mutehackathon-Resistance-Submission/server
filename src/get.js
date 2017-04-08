@@ -7,6 +7,7 @@ request.get({
      json:true
 }, function(error, response, body){
    console.log(error);
-   console.log(JSON.stringify(response));
+   //console.log(JSON.stringify(response));
+   //console.log(response);
    console.log(body);
 });
