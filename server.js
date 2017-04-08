@@ -39,9 +39,7 @@ app.get('/picture', function(req, res) {
     var query = req._parsedUrl.query;
     if (query != null) {
         var db = new sqlite3.Database('database.db');
-        console.log("Send specific query.");
         databaseQuery = "SELECT picture FROM pictures WHERE " + query.toString() + ";";
-        console.log(databaseQuery);
         values = [];
         db.each(databaseQuery, function(err, row) {
             values.push(row);
