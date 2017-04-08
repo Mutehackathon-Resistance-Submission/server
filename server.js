@@ -6,9 +6,8 @@ var db = new sqlite3.Database('database.db');
 
 app.set('port', (process.env.PORT || 3000));
 
-app.use(express.limit('5mb'));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
