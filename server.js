@@ -1,14 +1,12 @@
 var express = require('express');
 var app = express();
-var request = require('request');
-var http = require('http');
 var bodyParser = require('body-parser');
-var fs = require('fs');
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('database.db');
 
-app.use(bodyParser.json());
+app.set('port', (process.env.PORT || 3000));
 
+app.use(bodyParser.json());
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -78,6 +76,6 @@ app.get('/sightings', function(req, res) {
     }
 });
 
-app.listen(3000, function() {
-    console.log("Server is listening on: ", 3000);
+app.listen(app.get('port'), function() {
+    console.log("Server is listening on: ", app.get('port'));
 });
