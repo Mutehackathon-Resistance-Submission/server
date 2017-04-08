@@ -22,9 +22,7 @@ app.post('/sightings', function(req, res) {
     console.log(data);
     db.serialize(function() {
         var stmt = db.prepare("INSERT INTO persons VALUES (?, ?, ?, ?)");
-        stmt.run(data.lat, data.lon, data.extrainfo, data.timestamp, function() {
-            res.send({ status: "success" });
-        });
+        stmt.run(data.lat, data.lon, data.extrainfo, data.timestamp);
         var stmt2 = db.prepare("INSERT INTO pictures VALUES(?, ?)");
         stmt2.run(data.timestamp, data.picture, function() {
             res.send({ status: "success" });
